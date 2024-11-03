@@ -205,4 +205,75 @@ Java的Integer缓存有静态缓存池，用于存储特定范围的整数值对
   抽象类中的成员变量默认为default，可以在子类中重新定义，也可被赋值。  
   抽象方法被abstract修饰，不能被private, static, synchronized, native修饰，必须以分号结尾，没有花括号。
   * 变量：抽象类可以包含实例变量和静态变量，而接口只能有常量。
-### 
+### 抽象类能被final修饰吗？
+不能，Java中的抽象类是被继承的，而final修饰符禁止被继承或重写。
+### 接口内可以定义哪些方法？
++ 抽象方法  
+抽象方法是接口的核心，所有实现接口的类都必须实现这些方法。抽象方法默认是public和abstract，这些修饰符可以被省略。
+```Java
+public interface Animal{
+    void makeSound();
+}
+```
++ 默认方法  
+默认方法是Java8引入的，允许接口提供具体实现。实现类可以选择重写默认方法。
+```Java
+public interface Animal{
+    void makeSound();
+    default void sleep(){
+      System.out.println("Sleeping……");
+    }
+}
+```
++ 静态方法  
+静态方法于Java8引入，属于接口本身，可以通过接口名直接调用，而不需要实现类的对象。
+```Java 
+public interface Animal{
+    void makeSound();
+    static void staticMethod(){
+      System.out.println("This is a staticMethod in interface");
+    }
+}
+```
++ 私有方法  
+私有方法于Java9引入，用于在接口中为默认方法或其他私有方法提供辅助功能。这些方法不能被实现类访问，只能在接口内部使用。  
+```Java
+public interface Animal{
+    void makeSound();
+    default void sleep(){
+      System.out.println("Sleeping……");
+      logsleep();
+    }
+    
+    private logsleep() {
+        System.out.println("Logging sleep");
+    }
+}
+```
+### 抽象类可以被实例化吗？
+不能。意味着不能用new创建一个抽象类的对象。抽象类的存在主要是为了继承，通常包括一个或多个抽象方法(由abstract修饰且无方法体的方法)，这些方法需要在子类中被实现。  
+抽象类可以有构造器，这些构造器在子类实例化时会被调用，以便进行必要的初始化工作。然而，这个方法并不是直接实例化抽象类，而是创建了子类的实例，间接使用了抽象类的构造器。
+```Java
+public abstract class AbstarctClass{
+    public AbstarctClass(){
+        //构造器代码
+    }
+    public abstract void abstractMethod();
+    
+}
+public class ConcreteClass extends AbstarctClass{
+    public ConcreteClass(){
+        super(); //调用抽象类的构造器
+    }
+    @Override
+  public void abstractMethod(){
+        //实现抽象方法
+    }
+}
+ConcreteClass concreteClass = new ConcreteClass();
+```
+在如上的例子中，ConcreteClass继承了AbstractClass并实现了抽象方法abstractMethod()。  
+当创建ConcreteClass的实例时，AbstractClass的构造器被调用，但这并不意味着AbstractClass被实例化。  
+实际上，创建了一个ConcreteClass的一个对象。  
+简言之，抽象类不能被实例化，但通过继承抽象类并实现所有抽象方法的子类是可以被实例化的。  
+
