@@ -68,3 +68,127 @@ int intValue = (int) longValue; //强制类型转换，可能导致溢出
 * 字符串转换：  
 如字符串换int的Integer.parseInt()方法。  
 如字符串换double的Double.parseDouble()方法。
+### 装箱和拆箱
+装箱和拆箱是将基本数据类型和对应包装类相互转换的过程。
+```Java
+Integer i = 10; //装箱
+int n = i;  //拆箱
+```
+自动装箱发生在两种情况，一种是赋值时，一种是方法调用时。  
+* 赋值
+```Java
+//before autoboxing
+Integer i = Integer.valueOf(3);
+int iPrimitive = i.intValue();
+```
+* 方法调用
+```Java
+public static void main(Integer i) {
+  System.out.println("autoboxing example - method innovation i="+i);
+  return i;
+}
+//autoboxing and unboxing method innovation
+show(3);
+int result=show(3);
+```
+* 自动装箱的弊端
+在循环中进行自动装箱操作的情况，如下就会创建多余的对象，影响性能。
+```Java
+Integer sum = 0;
+for(int i=1;i<5000;i++){
+    sum+=i;
+        }
+```
+上述sum+=i可以看成sum=sum+i，但是+操作符不适用于Integer，sum会进行自动拆箱，进行数值相加操作，最后发生自动装箱转为Integer。实际上，内部变化如下：  
+```Java
+int result = sum.intValue()+ i;
+Integer sum = new Integer(result);
+```
+由于sum声明为Integer类型，在上述的循环会产生5000个无用Integer对象，在这样庞大循环中，会降低性能，增加垃圾回收的工作量。
+### Java的Integer
+Integer是int的包装类，把int类型包装为Object对象。对象封装有诸多好处，可以把属性和处理这些属性的方法结合在一起。比如Integer就有parseInt()专门处理int相关的数据。  
+另一个原因是Java绝大多数方法和类都是处理对象的，如ArrayList集合类就只能以类作为存储对象，而这时将一个int写入list是不可能的，必须把它包装成类，也就是Integer才能被List所接受。  
+* 泛型的应用
+在Java中，泛型只能使用引用类型，不能使用基本类型。泛型在使用中要想使用int，必须使用Integer的包装类。
+
+```Java
+List<Integer> list = new ArrayList();
+list.add(3);
+list.add(1);
+list.add(2);
+Collections.sort(list);
+system.out.println(list);
+```
+将元素排序，并将排序结果存在一个新的列表中，若采用int，则无法直接使用Collections.sort()方法。  
+若采用Integer包装类，则可以使用该方法。
+
+* 转换中的应用
+在Java中，基本类型和转换类型不能直接进行转换，必须使用包装类实现。
+例如：
+```Java
+int i = 10;
+Integer integer = new Integer();
+String string = integer.toString();
+system.out.println(string);
+```
+将一个int类型的值转为String类型，必须将其先转为Integer类型，然后再用toString()方法转为String。
+* 集合的应用
+Java集合只能存对象，而不能存基本数据类型。因此，要想将int存到集合中，必须用Integer包装类。
+例如：
+
+```Java
+import java.util.ArrayList;
+
+List<Integer> list = new ArrayList<>();
+list.add(3);
+list.add(1);
+list.add(2);
+int sum = list.stream().mapToInt(Integer::intValue).sum();
+system.out.println(sum);
+```
+有一个列表，欲对其求和。如果用int，需要用循环对其遍历求和。如果用Integer，可以直接用stream()方法来求和。  
+### Integer相比int的优势
++ Integer与int的区别
+  * 引用类型和基本数据类型
+  * 自动装箱和拆箱
+  * 空指针异常  
++ 为何仍然保存int类型  
+包装类是引用类型，对象的引用和对象本身是分开存放的；而对于基本数据类型，变量对应的内存块直接存储数据本身。  
+因此int类型在读写效率方面要优于Integer。  
+btw，在x64的JVM上，在开启引用压缩的情况下，一个Integer对象占用16字节，而一个int只占用4字节。
+### Integer的缓存
+Java的Integer缓存有静态缓存池，用于存储特定范围的整数值对应的Integer对象。  
+默认范围，-128~127。当通过Integer.valueOf(int)方法创建一个在该范围内的整数对象时，并不会每次都声称新的对象实例，而是复用缓存中的现有对象。无需新建对象。  
+## 面向对象
+### 三态
+面向对象是一种编程范式，将现实世界中的事物抽象为对象，对象有属性和行为。  
+三大特性：封装，继承，多态。
+* 封装：将对象的属性和方法结合在一起。对外隐藏对象的内部细节，通过接口与外界交互。目的是增强安全性和简化编程，使对象独立。  
+* 继承：使得子类自动共享父类的数据结构和方法。是代码复用的重要手段。
+* 多态：允许不同类的对象对同一消息作出相应。即同一个接口，使用不同的实例执行不同的操作。分为编译时多态(重载)、运行时多态(重写)。使程序具有良好灵活性和扩展性。
+### 多态体现在哪些方面
++ 方法重载  
+方法重载是指同一类可以有多个同名方法，它们具有不同的参数列表。虽然方法名相同，但是传入的参数不同，编译器在编译时决定调用哪个方法。  
+例如对于一个add方法，可以定义为add(int a, int b)，也可为add(double a, double b)
++ 方法重写  
+方法重写是子类能够提供对父类重名方法的具体实现。运行时，JVM根据对象的实际类型确定调用哪个版本的方法。实现多态。  
+例如在一个动物类Animal中有sound()方法，子类Dog可以重写该方法以实现bark，Cat类可以实现meow。
++ 接口与实现  
+多个类可以实现同一个接口，并且用接口类型的引用来调用这些类的方法。  
+例如多个类(Dog,Cat)都实现了一个Animal接口，当用Animal类型的引用来调用makesound方法时，会触发相应的实现。
++ 向上转型和向下转型  
+使用父类的引用指向子类对象，是向上转型。  
+向下转型是将父类引用转回其子类类型。
+### 面向对象六大原则
+* 单一职责原则：一个类只有一个引起他变化的原因，即一个类只负责一个职责。
+* 开放封闭原则：软件实体应该对扩展开放，对修改封闭。
+* 里氏替换原则：子类对象应能够替换掉所有父类对象。
+* 接口隔离原则：客户端不应该依赖那些它不需要的接口，接口应该又小又专。
+* 依赖倒置原则：高层模块不应依赖底层模块，二者应该依赖于抽象；抽象不依赖于细节，细节依赖于抽象。
+* 最少知识原则：一个对象应该对其他对象有最少的了解。
+### 重载与重写
+* 重载：同一个类，可有多个同名方法，有不同参数列表，编译器根据调用的参数类型决定调用哪个方法。  
+* 重写：子类可以重新定义父类中的方法，但方法名，参数，返回值须保持一致，通过@override注解表明是重写。
+### 抽象类与普通类
+* 实例化：普通类可以直接实例化对象，抽象类不能被实例化，只能被继承。
+* 
