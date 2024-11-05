@@ -341,7 +341,35 @@ Myclass.printStaticVar();     //输出2
 ```Java
 class Parent{
   static {
-    
+    System.out.println("Parent static block");
+  }
+  static int parentStaticVar=10;
+  Parent(){
+    System.out.println("Parent constuctor");
   }
 }
+
+class Child extends Parent{
+    static {
+      System.out.println("Chile static block");
+    }
+    static int childStaticVar=20;
+    Child(){
+      System.out.println("Child constructor");
+    }
+}
+
+public class Main{
+  public static void main(String[] args) {
+    Child c = new Child();
+  }
+}
+
+// 输出如下：
+Parent static block
+Chile static block
+Parent constuctor
+Child constructor
 ```
+从结果来看，在创建Child类型对象时，首先执行父类的静态块，然后是子类的静态块，最后才是父类和子类的构造函数。  
+## 深拷贝和浅拷贝
