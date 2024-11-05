@@ -373,3 +373,84 @@ Child constructor
 ```
 从结果来看，在创建Child类型对象时，首先执行父类的静态块，然后是子类的静态块，最后才是父类和子类的构造函数。  
 ## 深拷贝和浅拷贝
+### 深拷贝和浅拷贝的区别？
+![img_1.png](img_1.png)  
+* 浅拷贝是只复制对象本身和其内部的值类型字段，但不会复制对象内部的引用类型字段。  
+简言之：浅拷贝只是创建一个新的对象，然后将原对象的字段值复制到新对象中，但如果原对象内部有引用类型的字段，只是将引用复制到新对象中，两个对象指向的是同一个引用对象。
+* 深拷贝是在复制对象的同时，将对象内部的所有引用类型字段的内容也复制一份，而不是共享。  
+简言之：深拷贝会递归复制对象内部所有引用类型的字段，生成一个全新的对象以及其内部的所有对象。
+### 实现深拷贝的方法
++ 实现Cloneable 接口并重写clone()方法：
+```Java
+public class Cloner implements Cloneable{
+  private String field1;
+  private NestedClass nestedClass;
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException{
+    Cloner cloner = (Cloner) super.clone();
+    cloner.nestedClass = (NestedClass) nestedClass.clone(); //深拷贝的内部引用对象
+    return cloner;
+  }
+}
+
+public class NestedClass implements Cloneable {
+  private int nestedField;
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException{
+    return super.clone();
+  }
+}
+```
++ 使用序列化和反序列化
+将对象序列化为字节流，再从字节流反序列化为对象实现深拷贝。要求对象及其所有引用类型的字段都实现Serializable接口。
+```Java
+public class StreamClone implements Serializable {
+    private String field1;
+    private StreamNestedClass nestedObject;
+    public StreamClone deepCopy(){
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(this);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            return (StreamClone) objectInputStream.readObject();
+        }
+        catch (IOException|ClassNotFoundException exception){
+            exception.printStackTrace();
+            return null;
+        }
+    }
+}
+
+public class StreamNestedClass implements Serializable {
+  private int nestedField;
+}
+```
++ 手动递归复制
+针对特定对象结构，手动递归复制对象及其引用类型字段。适用于对象结构复杂度不高的情况。
+```Java
+public class HandClone {
+    private String field1;
+    private HandNestedClass nestedObject;
+    private HandClone deepCopy(){
+        HandClone copy = new HandClone();
+        copy.setField1(this.field1);
+        copy.setNestedObject(this.nestedObject.deepCopy());
+        return copy;
+    }
+}
+
+public class HandNestedClass {
+  private int nestedField;
+  public HandNestedClass deepCopy(){
+    HandNestedClass copy = new HandNestedClass();
+    copy.setNestedField(this.nestedField);
+    return copy;
+  }
+}
+```
