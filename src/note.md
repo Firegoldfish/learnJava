@@ -290,7 +290,58 @@ ConcreteClass concreteClass = new ConcreteClass();
 public class MyClass{
     static int staticVar=0; //静态变量
   public MyClass(){
-      
+      saticVar++;
+  }
+  public static void printStaticVar(){
+    System.out.println("StaticVar="+staticVar);
+  }
+}
+
+//使用实例
+Myclass obj1 = new MyClass();
+Myclass obj2 = new MyClass();
+Myclass.printStaticVar();     //输出2
+```
++ 静态方法  
+  静态方法是在类中使用static关键字声明的方法。类似于静态变量，静态方法也属于类，无任何具体的对象。特点：
+  * 无实例依赖：静态方法可以在没有创建类实例的情况下调用。对于静态方法而言，不能直接访问非静态的成员变量或方法，因为静态方法没有上下文的实例。
+  * 访问静态成员：静态方法可以直接调用其他静态变量和静态方法，不能直接访问非静态成员。
+  * 多态性：静态方法不可以被重写，可以隐藏。
+  ```Java
+  public class MyClass{
+    static int count = 0;
+    public static void incrementCount(){
+      count++;
+    }
+    public static void displayCount(){
+      System.out.println("Count="+count);
+    }
+  }
+  //使用实例
+  MyClass.incrementCount();
+  MyClass.displayCount(); //Count=1
+  ```
++ 使用场景
+  * 静态变量：常用于需要在所有对象间共享的数据，如计数器、常量等。
+  * 静态方法：常用于助手方法、获取类级别的信息或者没有依赖于实例的数据处理。
+### 非静态内部类和静态内部类的区别
++ 非静态内部类依赖于外部类的实例，而静态内部类不依赖于外部类的实例。
++ 非静态内部类可以访问外部类的实例变量和方法，而静态内部类只能访问外部类的静态成员。
++ 非静态内部类不能定义静态成员，而静态内部类可以定义静态成员。
++ 非静态内部类在外部类实例化后才能实例化，而静态内部类可以独立实例化。
++ 非静态内部类可以访问外部类的私有成员，而静态内部类不能直接访问外部类的私有成员，需要通过实例化外部类访问。
+### 非静态内部类可以直接访问外部方法，编译器怎样实现？
+非静态内部类可以直接访问外部方法是因为编译器在生成字节码时会为非静态内部类维护一个指向外部类实例的引用。  
+这个引用使得非静态内部类能够直接访问外部类的实例变量和方法。编译器会在生成非静态内部类的构造方法时，将外部类实例作为参数传入，并在内部类的实例化过程中建立外部类实例与内部类实例间的联系，从而实现直接访问外部方法的功能。  
+### 父类、子类都有静态的成员变量、构造方法、静态方法，加载顺序如何？
++ 父类静态成员变量、静态代码
++ 子类静态成员变量、静态代码
++ 父类构造方法
++ 子类构造方法
+```Java
+class Parent{
+  static {
+    
   }
 }
 ```
