@@ -454,3 +454,97 @@ public class HandNestedClass {
   }
 }
 ```
+## 泛型
+### 定义
+泛型是Java编程语言的重要特性。允许类、接口和方法在定义时使用一个或者多个类型参数，这些类型参数在使用时可以被指定为具体的类型。  
+泛型的主要目的是在编译时提供更强的类型检查，并在编译后能够保留类型信息，避免了在运行时出现类型转换错误。
++ 适用于多种数据类型执行相同的代码
+```Java
+public class Genericity {
+    //未使用泛型
+    private static int add(int a, int b){
+        System.out.println("a+b="+(a+b));
+        return a+b;
+    }
+    private static float add(float a, float b){
+        System.out.println("a+b="+(a+b));
+        return a+b;
+    }
+    private static double add(double a, double b){
+        System.out.println("a+b="+(a+b));
+        return a+b;
+    }
+    //使用泛型
+    private static <T extends Number> double add(T a, T b){
+        System.out.println(a+"+"+b+"="+(a.doubleValue()+b.doubleValue()));
+        return a.doubleValue()+b.doubleValue();
+    }
+}
+```
+如果没有泛型，要实现不同的加法，每种数据类型都需要重在一个add方法；通过泛型，就可以复用一个方法。
++ 泛型中的类型在使用中指定，不需要强制类型转换(类型安全，编译器检查类型)
+
+```Java
+import java.util.ArrayList;
+import java.util.List;
+
+List list = new ArrayList();
+list.add("xxString");
+list.add(100d);
+list.add(new Person());
+```
+在上述list中，list的元素都是Object类型，所以取出集合元素需要人为强制转换为目标类型，容易抛出异常。  
+引入泛型，它将提供类型的约束，提供编译前的检查：
+```Java
+import java.util.ArrayList;
+import java.util.List;
+
+List<String> list = new ArrayList<String>();
+//list中只能放String，不能放其他类型的元素
+```
+## 对象
+### Java创建对象有哪些方式？
++ 使用new关键字：通过new关键字直接调用类的构造方法来创建对象。
+```Java
+MyClass myClass = new MyClass();
+```
++ 通过Class类的newInstance()方法：反射机制
+```Java
+MyClass myClass = (MyClass) Class.forName("com.example.MyClass").newInstance();
+```
++ 使用Constructor类的newInstance()方法：
+```Java
+import java.lang.reflect.Constructor;
+
+Constructor<MyClass> constructor = MyClass.class.getConstructor();
+MyClass myClass = constructor.newInstance();
+```
++ 使用clone()方法：如果实现了Cloneable接口
+```Java
+MyClass obj1 = new MyClass();
+MyClass obj2 = (MyClass) obj1.clone();
+```
++ 使用反序列化：通过对象序列化到文件或流中，然后再进行反序列化来创建对象。
+
+```Java
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+
+ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("object.ser"));
+oos.writeObject(obj);
+oos.close();
+
+ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Object.ser"));
+MyClass obj = (MyClass) in.readObject();
+in.close();
+```
+### New出的对象什么时候回收？
+由Java的垃圾回收器(Garbage Collector)回收，在程序运行中自动进行，会周期性的监测不被引用的对象，并将其回收释放内存。
++ 引用计数法：某个对象的引用计数为0时，表示该对象不再被引用，可被回收。
++ 可达性分析算法：从根对象出发，通过对象之间的引用链进行遍历，如果存在某条链到达某对象，则证明可达。不可达将被回收。
++ 终结器：如果对象重写了finalize()方法，垃圾回收器会在回收该对象之前调用finalize()方法，对象可以在该方法中进行清理操作。但他的执行时间不确定，可能会导致不可预测的性能问题。
+## 反射
+Java反射机制是在运行状态中，对于任何一个类，都能够知道这个类中的所有属性和方法，对于任意一个对象，都能够调用他的任意一个方法和属性。  
+特性：
++ 运行时类信息访问：
+
