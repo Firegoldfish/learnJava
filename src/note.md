@@ -587,3 +587,99 @@ public static String getName(String key) throws IOException{
     return properties.getProperty(key);
 }
 ```
+
+## 注解
+### 注解原理
+注解本质上是继承了一个Annotation接口，其具体实现类是Java运行时生成的动态代理类。  
+在反射获取注解时，返回的是Java运行时生成的动态代理对象。通过代理对象调用自定义注解的方法，会最终通过AnnotationInvocationHandler的invoke方法。该方法会从memberValues这个Map中引出对应的值。而memberValues是Java常量池。  
+### 注解作用域
+<ol>
+1. 类级别作用域：用于描述类的注解，通常放置在类的定义上，可以用于指定类的一些属性，如类的访问级别、继承关系、注释等。<br>
+2. 方法级别作用域：用于描述方法的注解，通常放置在方法定义的上面，可以用于指定方法的一些属性，如方法的访问级别、返回值类型、异常类型、注释等。<br>
+3. 字段级别作用域：用于描述字段的注解，通常放置在字段定义的上面，可以用于指定字段的一些属性，如字段的访问级别、默认值、注释等。  
+</ol>
+除了这三种域，Java还提供了其他一些注解作用域，例如构造函数作用域和局部变量作用域。这些注解作用域可以用来对构造函数和局部变量进行描述和注释。
+
+## 异常
+Java的异常主要基于两大类：Throwable及其子类。 Throwable有两个重要子类：Error和Exception。
+1. Error(错误)：表示运行环境的错误。错误是程序无法自主处理的严重问题，如系统崩溃、虚拟机错误、动态链接错误。通常，程序不应该尝试捕获这些错误。  
+例如： OutOfMemoryError, StackOverflowError等。
+2. Exception(异常)：表示程序可以自行处理的异常条件。分为两大类：
+   + 非运行时异常：这类异常在编译时期就必须被捕获或者声明抛出。他们通常是外部错误，如文件不存在(FileNotFoundException)、类未找到(ClassNotFoundException)等。非运行时异常强制程序员处理这些可能出现的问题，增强文件的健壮性。
+   + 运行时异常：这类异常包括运行时异常(RuntimeException)和错误(Error)。运行时异常由程序错误导致，如空指针访问(NullPointerException)、数组越界(ArrayIndexOutOfBoundsException)等。运行时异常时不需要在编译时强制捕获或声明的。
+### 异常处理
+异常处理是通过使用try-catch语句块来捕获和处理异常。
++ try-catch语句块：用于捕获并处理可能抛出的异常。try中包含可能抛出异常的代码。catch用于捕获并处理特定类型的异常。可以有多个catch来处理不同类型的异常。
+```Java
+try{
+    // 可能抛出异常的代码
+        }
+        catch(ExceptionType e1){
+    //  处理异常类型1的逻辑
+        }
+        catch(ExceptionType e2){
+        //  处理异常类型2的逻辑
+        }
+        catch(ExceptionType e3){
+        //  处理异常类型3的逻辑
+        }
+        finally{
+        // 可选，无论是否异常都执行此
+        }
+```
++ throw语句：用于手动抛出异常，可以根据需要在代码中主动抛出特定类型的异常。
+```Java
+throw new ExceptionType("Exception message");
+```
++ throws关键字：用于在方法声明可能抛出的异常类型。如果一个方法可能抛出异常，但不想在方法内部处理，就可以用throws。
+```Java 
+public void methodName() throws ExceptionType(){
+    // method 语句
+        }
+```
++ finally块：无论是否发生异常都处理的语句。用于释放资源。
+```Java
+try {
+    // 可能抛出异常的代码
+        }
+        catch (ExceptionType e1){
+        //  处理异常类型1的逻辑
+        }
+        finally{
+        //无论是否发生异常，都需要处理的语句块
+        } 
+```
+### 抛出异常为何不使用throws？
+如果异常是未检查异常，或者在方法内被捕获和处理就无需throws。
++ Unchecked Exceptions：未检查异常，继承自RuntimeException或Error的异常，编译器不强制要求进行异常处理。因此，对于此类异常，不需要在方法签名中使用throws来声明。
++ 捕获和处理异常：在方法内部捕获了可能抛出的异常，并在方法内部处理，而不通过throws处理。此时也不需要在方法签名中使用throws。
+### try-catch-finally的语句运行情况
+try中的语句顺序执行，若异常，跳转到catch进行匹配和处理，然后程序将继续执行catch之后的代码。若没有匹配的语句，异常被传递给上一层调用的方法。  
+例如：
+```Java
+try{
+    return "a";
+        }
+        finally{
+    return "b";
+        }
+        //finally会覆盖try，只返回b
+```
+## Object
+### ==和equals的区别？
+对于字符串而言，==比较的是两个字符串的值，即两个对象在内存中的首地址；equals比较字符串内容是否相同。  
+对于非字符串而言，如果没有对equal()重写，==和equals作用相同，都是比较在内存中的首地址，即用来比较两个变量是否指向同一对象。  
++ ==：比较两个字符串的内存地址是否相等，用于数值；
++ equals：比较两个字符串内容，属于内容比较。  
+### StringBuffer和StringBuilder的区别？
+
+
++ String是Java基础类，被声明为final class，是不可变字符串。因为这个特性，所以在拼接字符串时会产生很多无用的中间对象，如果频繁进行这样的操作会对性能有所影响。
++ StringBuffer是为了解决大量拼接字符串而提供的类。有append和add方法，可以将字符串拼接到队尾或者指定位置，本质上是一个线程安全的可修改字符串。
++ StringBuilder仅仅是StringBuffer去掉了线程安全，节约开销。
+
+一般情况下，速度默认为StringBuilder > StringBuffer > String。  
+使用场景：
++ 操作少量用String
++ 单线程大量数据StringBuilder
++ 多线程大量数据StringBuffer
