@@ -545,6 +545,45 @@ in.close();
 + 终结器：如果对象重写了finalize()方法，垃圾回收器会在回收该对象之前调用finalize()方法，对象可以在该方法中进行清理操作。但他的执行时间不确定，可能会导致不可预测的性能问题。
 ## 反射
 Java反射机制是在运行状态中，对于任何一个类，都能够知道这个类中的所有属性和方法，对于任意一个对象，都能够调用他的任意一个方法和属性。  
-特性：
-+ 运行时类信息访问：
-
+### 特性：
++ 运行时类信息访问：反射机制允许程序在运行时获取类的完整结构信息，包括类名、包名、父类、实现的接口、构造函数、方法和字段。  
++ 动态对象创建：可以使用反射API动态的创建对象实例，即使在编译时不知道具体的类名。
++ 动态方法调用：可以在运行时动态的调用对象的方法，包括私有方法。通过Method类的invoke()方法实现，允许传入对象实例和参数值来执行方法。
++ 访问和修改字段值：反射允许程序在运行时访问和修改对象的字段值，即使是私有。
+### 应用场景：
++ 加载数据库驱动
+```Java
+Class.forName("com.mysql.cj.jdbc.Driver");
+```
++ 配置文件加载  
+Spring的IOC，Spring通过配置文件配置各种bean，用哪些，就会动态加载哪些。  
+Spring通过xml配置模式装载Bean的过程：
+  * 将程序中所有xml或properties配置文件加载入内存。
+  * Java类里面解析xml或者properties里面的内容，得到对应实体类的字节码字符串以及相关的属性信息。
+  * 使用反射机制，根据这个字符串获得某个类的CLass实例。
+  * 动态配置实例的属性  
+```  
+```  
+配置文件
+```Java
+className=com.example.reflectdemo.TestInvoke
+methodName=printlnState
+```
+实体类
+```Java
+public class TestInvoke{
+    private void printlnState(){
+      System.out.println("aaa");
+    }
+}
+```
+解析配置文件内容
+```Java
+public static String getName(String key) throws IOException{
+    Properties properties = new Properties();
+    FileInputStream fis = new FileInputStream("Path");
+    properties.load(fis);
+    fis.close();
+    return properties.getProperty(key);
+}
+```
