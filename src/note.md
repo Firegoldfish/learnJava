@@ -673,7 +673,6 @@ try{
 + equals：比较两个字符串内容，属于内容比较。  
 ### StringBuffer和StringBuilder的区别？
 
-
 + String是Java基础类，被声明为final class，是不可变字符串。因为这个特性，所以在拼接字符串时会产生很多无用的中间对象，如果频繁进行这样的操作会对性能有所影响。
 + StringBuffer是为了解决大量拼接字符串而提供的类。有append和add方法，可以将字符串拼接到队尾或者指定位置，本质上是一个线程安全的可修改字符串。
 + StringBuilder仅仅是StringBuffer去掉了线程安全，节约开销。
@@ -683,3 +682,27 @@ try{
 + 操作少量用String
 + 单线程大量数据StringBuilder
 + 多线程大量数据StringBuffer
+## Java8新特性
+### StreamAPI
+Java8引入了StreamAPI，它提供了一种高效且易于使用的数据处理方式，特别适合集合对象的操作，如过滤，映射，排序等。StreamAPI不仅可以提高代码的可读性和简洁性，还能利用多核处理器的优势进行并行处理。
++ 过滤并收集满足条件的元素  
+问题场景：从一个列表中筛选出所有长度大于3的字符串，并收集到新的列表中。
+```Java
+public class StreamAPI {
+  public void withoutAPI(){ //不使用API
+    List<String> originalList = Arrays.asList("Apple", "Fig", "Banana", "Kiwi");
+    List<String> filterList = new ArrayList<String>();
+    for(String item : originalList){
+      if(item.length() > 3){
+        filterList.add(item);
+      }
+    }
+  }
+  public void withAPI(){    //使用API
+    List<String> originalList = Arrays.asList("Apple", "Fig", "Banana", "Kiwi");
+    List<String> filterList = originalList.stream().filter(s->s.length()>3).collect(Collectors.toList());
+  }
+}
+```
+如上，在不使用API时，通过循环遍历原列表，手动检查每个元素是否符合条件，然后添加到新列表。  
+使用API后，在原列表调用.stream()方法创建一个流，使用.filter()中间操作筛选出长度大于3的字符串，最后使用.collect(Collectors.toList())终端操作将结果收集到一个新列表中。
