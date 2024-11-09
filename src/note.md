@@ -706,3 +706,26 @@ public class StreamAPI {
 ```
 如上，在不使用API时，通过循环遍历原列表，手动检查每个元素是否符合条件，然后添加到新列表。  
 使用API后，在原列表调用.stream()方法创建一个流，使用.filter()中间操作筛选出长度大于3的字符串，最后使用.collect(Collectors.toList())终端操作将结果收集到一个新列表中。
++ 计算列表中所有数字之和
+```Java
+public void sumWithoutAPI(){
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        int sum = 0;
+        for(Integer number : numbers){
+            sum += number;
+        }
+    }
+    public void sumWithAPI(){
+        List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        int sum = numbers.stream().mapToInt(Integer::intValue).sum();
+    }
+```
+传统方法使用for循环遍历整个列表，累加它们的值进行求和。  
+通过StreamAPI，可以先使用.mapToInt()将Integer流转换为IntStream，然后调用.sum()方法求和。
+### Stream流的并行API
+并行流(ParallelStream)将源数据分为多个子流对象进行多线程操作，然后将处理的结果再汇总成一个流对象，底层使用通用的fork/join池实现，即将一个任务拆分成多个小任务并行计算，再把多个小任务的结果合并成总的计算结果。  
+对CPU密集的任务来说，并行流使用的是ForkJoinPool线程池，为每个CPU分配一个任务，这是非常有效率的。但如果任务不是CPU密集型的，而是IO密集，那就不是很好的选择。
+### completableFuture
++ Future表示异步计算的结果，只能通过阻塞或者轮询的方式获取结果，而且不支持设置回调方法。
++ completableFuture对Future进行了扩展，可以通过设置回调的方法处理计算结果，同时也支持组合操作，支持进一步的编排，同时一定程度解决了回调地狱的问题。
+### 序列化
