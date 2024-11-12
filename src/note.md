@@ -748,3 +748,29 @@ Java默认的序列化虽然实现方便，但存在安全漏洞、不跨语言�
 * 只有实现了Serializable或Externalizable接口的类的对象才能被序列化，否则抛出异常。
 ## 设计模式
 ### volatile和sychronized如何实现单例模式
+```Java
+public class SingleTon {
+public static volatile SingleTon instance = null;
+private SingleTon() {}
+
+    public static SingleTon getInstance() {
+        if (instance == null) {
+            synchronized (SingleTon.class) {
+                if (instance == null) {
+                    instance = new SingleTon();
+                }
+            }
+        }
+        return instance;
+    }
+}
+```
+正确的双重检查锁定模式需要使用volatile。volatile主要包括两个功能：
++ 保证可见性。使用volatile定义的变量，将会对所有进程的可见性。
++ 禁止指令重排序优化。
+- 由于volatile禁止对象创建时指令之间重排序，所以其他进程不会访问到一个未初始化的对象，从而保证安全性。
+### 代理模式和适配器模式
++ 目的不同： 代理模式主要关注控制对象的访问，二适配器模式适用于接口转换，使不兼容的类能够一起工作。
++ 结构不同： 代理模式一般包括抽象主题、真实主题和代理三个角色。适配器模式包含目标接口、适配器和被适配者三个角色。
++ 应用场景不同： 代理模式通常用于添加额外功能或控制对对象的访问，适配器模式常用于让不兼容的接口协同工作。
+
