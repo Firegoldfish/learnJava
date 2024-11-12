@@ -746,3 +746,5 @@ Java默认的序列化虽然实现方便，但存在安全漏洞、不跨语言�
 + ObjectOutputStream：通过writeObject()方法叫做序列化操作。
 + ObjectInputStream：通过readObject()方法叫做反序列化操作。
 * 只有实现了Serializable或Externalizable接口的类的对象才能被序列化，否则抛出异常。
+## 设计模式
+### volatile和sychronized如何实现单例模式
