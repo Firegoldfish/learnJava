@@ -13,3 +13,17 @@
   + LinkedHashMap：基于哈希表和双向链表实现的Map集合，保持插入顺序或访问顺序。
   + PriorityQueue：优先队列，可以按照比较器或元素的自然顺序进行排序。
 ### 集合类型
++ List：有序的Collection
+  + ArrayList：容量可变，非线程安全，底层数组。支持快速随机访问，增删速度慢。
+  + LinkedList：双向列表，增删快，随机访问慢。
++ Set：无序，唯一
+  + HashSet：通过HashMap实现，HashMap的Key即HashSet存储的元素，所有Key都使用相同的Value，线程不安全。
+  + LinkedHashSet：继承自HashSet，通过LinkedHashMap实现，双向链表维护插入顺序。
+  + TreeSet：通过TreeMap实现，添加元素到集合时按照比较规则将其插入到合适的位置，保证插入后的集合仍然有序。
++ Map：键值对集合。Key无序唯一，Value不要求有序，可以重复。检索时需要Key可导出Value
+  + HashMap：由数组+链表组成，数组是主体，链表为了解决哈希冲突（拉链法）。JDK1.8后转为红黑树，减少搜索时间。
+  + LinkedHashMap：继承自HashMap，底层基于拉链式散列结构或红黑树。增加双向链表，使得可以保持访问顺序。
+  + HashTable：数组+链表组成，数组是HashTable主体，链表为了解决哈希冲突。
+  + TreeMap：红黑树（自平衡的排序二叉树）
+  + ConcurrentHashMap：Node数组+链表+红黑树实现，西侧呢行安全（volatile+CAS或者synchronized）
+### 线程安全的集合
