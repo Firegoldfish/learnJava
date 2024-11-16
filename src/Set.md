@@ -27,3 +27,20 @@
   + TreeMap：红黑树（自平衡的排序二叉树）
   + ConcurrentHashMap：Node数组+链表+红黑树实现，西侧呢行安全（volatile+CAS或者synchronized）
 ### 线程安全的集合
++ Vector: 内部方法经过synchronized修饰，使用对象数组保存数据，可以根据自动的再增加容量，当数组已满，会创建新的数组，拷贝原有数组元素。
++ Hashtable: 加锁方式是给每个方法上synchronized关键字，这样锁住的是整个Table对象，不支持null键和值，很少使用。多用concurrentHashMap。
++ ConcurrentHashMap: 与HashTable也就是加锁粒度不同。在JDK1.8中，取消了segment字段，直接在table上加锁，实现对每一行加锁，进一步减少了并发冲突的概率。对于put操作，如果Key对应数组元素为null，通过CAS(Compare and Swap)将其设置为当前值。若Key对应不为null，则使用synchronized关键字申请锁，然后进行操作。如果put使得当前链表长度超过一定阈值，则将该链表转为红黑树，从而提高寻址效率。
++ ConcurrentSkipListMap: 实现了一个基于跳表算法的可排序并发集合。跳表是一种可以对数与其时间内完成增删查的数据结构，通过维护多个指向其他元素的跳跃链接实现高效查找。
+### ConcurrentHashMap的实现
++ JDK 1.7  
+是数组加链表实现的，数组又分为大数组Segment和小数组HashEntry。Segment是一种可重入锁，在CHM中扮演锁的角色；HashEntry则用于存储键值对数据。一个CHM中包含一个Segment数组，一个Segment包含一个HashEntry数组，每个HashEntry是一个链表的元素。  
++ JDK 1.8  
+在1.7中，CHM虽是线程安全的，但因为底层是数组+链表的构成，所有在数据多的情况下访问很慢，需要遍历整个表。在1.8中，采用数组+链表/红黑树的方式优化了存储。  
+1.8中的CHM通过volatile+CAS或者synchronized来实现线程安全。添加元素会首先判断容器是否空：
+  + 若为空，使用volatile+CAS
+  + 如不空，根据存储的元素计算该位置是否为空：
+    + 若根据存储的元素计算结果为空，CAS；
+    + 若根据存储的计算结果不为空，synchronized；  
+  + 然后遍历桶中的所有数据，并替换或新增节点到桶中，最后判断是否需转为红黑树，保证线程安全。
+  + 总结一句；CHM通过对头节点加锁保证线程安全。锁的粒度相比Segment更小，发生冲突概率更低，并发操作性能提高。
++ JDK1.8使用的红黑树优化了之前的固定链表。当数据量比较大的时候，查询性能也得到了大的提升。
