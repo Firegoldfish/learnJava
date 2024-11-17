@@ -25,7 +25,7 @@
   + LinkedHashMap：继承自HashMap，底层基于拉链式散列结构或红黑树。增加双向链表，使得可以保持访问顺序。
   + HashTable：数组+链表组成，数组是HashTable主体，链表为了解决哈希冲突。
   + TreeMap：红黑树（自平衡的排序二叉树）
-  + ConcurrentHashMap：Node数组+链表+红黑树实现，西侧呢行安全（volatile+CAS或者synchronized）
+  + ConcurrentHashMap：Node数组+链表+红黑树实现，线程安全（volatile+CAS或者synchronized）
 ### 线程安全的集合
 + Vector: 内部方法经过synchronized修饰，使用对象数组保存数据，可以根据自动的再增加容量，当数组已满，会创建新的数组，拷贝原有数组元素。
 + Hashtable: 加锁方式是给每个方法上synchronized关键字，这样锁住的是整个Table对象，不支持null键和值，很少使用。多用concurrentHashMap。
@@ -44,3 +44,16 @@
   + 然后遍历桶中的所有数据，并替换或新增节点到桶中，最后判断是否需转为红黑树，保证线程安全。
   + 总结一句；CHM通过对头节点加锁保证线程安全。锁的粒度相比Segment更小，发生冲突概率更低，并发操作性能提高。
 + JDK1.8使用的红黑树优化了之前的固定链表。当数据量比较大的时候，查询性能也得到了大的提升。
+### HashMap重写equals和hashcode方法注意事项
+HashMap使用Key对象的hashCode()和equals方法去决定key-value对的索引。当尝试着从HashMap中获取值的时候，这些方法也会被用到。如果没有正确被实现，在这种状况下，两个key也许会产生相同的hashCode和equals输出，HashMap则会认为他们是相同的，然后被覆盖，而非存储到不同的地方。  
+同样的，所有不允许存储重复数据的集合类都是以hashCode和equals去查找重复。遵循以下规则：
++ 若o1.equals(o2)，则o1.hashCode()==o2.hashCode()为true
++ 若o1.hashCode()==o2.hashCode()，并不意味着o1.equals(o2)为true
+### 重写HashMap的equals方法不当会出现的问题
+HashMap在比较元素时，会先通过HashCode进行比较，相同的情况下才会用equals。  
+所以用到equals时，hashCode必定相同。而hashCode相同时，equals不一定相同，比如散列冲突。  
+重写了equals，不重写hashCode，就会导致equals返回true，hashCode返回false，导致在hashMap等类中存在多个一模一样的对象，导致出现覆盖存储的数据问题，与hashMap只能有唯一的key不符合。  
+### HashMap线程不安全
+HashMap在多线程下会出现以下问题：JDK8中由于采用数组+链表+红黑树存储，但在多线程下，put方法存在数据覆盖的问题。  
+要保证线程安全，使用该方法：
++ Collections.synchronizedMap同步加锁的方式，还可以用HashTable，但同步的方式显然性能不达标，而ConcurrentHashTable更适合高并发。
