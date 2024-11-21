@@ -81,3 +81,9 @@ public class MyThreadPoll implements Runnable {
 ```
 优点：线程池可以重用预先创建的线程，避免了线程创建和销毁的开销，显著提高了性能。  
 缺点：线程池增加了程序的复杂度。
+### 线程的启动
+启动线程通过Thread类的start()方法
+```Java
+MyThread myThread = new MyThread();
+myThread.start();
+```
