@@ -56,6 +56,5 @@ int solution(vector<int> &A, vector<string> &D) {
             balance -= 5;
         }
     }
-
     return balance;
 }
