@@ -87,4 +87,8 @@ public class MyThreadPoll implements Runnable {
 MyThread myThread = new MyThread();
 myThread.start();
 ```
-a
+### 线程的停止
++ 异常法停止：
++ 沉睡中停止：
++ stop()暴力停止：
++ 使用return停止：
