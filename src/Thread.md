@@ -92,3 +92,4 @@ myThread.start();
 + 沉睡中停止：
 + stop()暴力停止：
 + 使用return停止：
+### 
