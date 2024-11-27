@@ -57,3 +57,6 @@ HashMap在比较元素时，会先通过HashCode进行比较，相同的情况�
 HashMap在多线程下会出现以下问题：JDK8中由于采用数组+链表+红黑树存储，但在多线程下，put方法存在数据覆盖的问题。  
 要保证线程安全，使用该方法：
 + Collections.synchronizedMap同步加锁的方式，还可以用HashTable，但同步的方式显然性能不达标，而ConcurrentHashTable更适合高并发。
+### Set集合特点
++ Set中元素唯一，不会出现重复。
++ Set内部数据结构(哈希树，红黑树)实现key的无重复。当向Set插入数据时，先根据hashCode确定位置，然后通过equals比较是否已有数据，若存在则不会再次插入，保证唯一性。
