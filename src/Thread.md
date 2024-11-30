@@ -147,3 +147,4 @@ private final ReentrantLock reentrantLock = new ReentrantLock();
 + <b>并发集合</b>：使用java.util.concurrent包中的线程安全集合，如ConcurrentHashMap、ConcurrentLinkedQueue等，这些集合内部已经实现了线程安全。
 + <b>JUC工具类</b>：java.util.concurrent包中的一些工具类可以控制线程的同步和协作。如Semaphore和CyclicBarrier等。
 哈吉米
+哈吉米
